@@ -297,6 +297,71 @@ profileForm = this.fb.group({
 </p>
 ```
 
+#### Validator functions
+There are two types of validator functions: sync validators and async validators.
+- **Sync validators:** functions that take a control instance and immediately return either a set of validation errors or null. You can pass these in as the second argument when you instantiate a FormControl.
+- **Async validators:** functions that take a control instance and return a Promise or Observable that later emits a set of validation errors or null. You can pass these in as the third argument when you instantiate a FormControl.
+
+#### Control status CSS classes
+- Like in AngularJS, Angular automatically mirrors many control properties onto the form control element as CSS classes. You can use these classes to style form control elements according to the state of the form. The following classes are currently supported:
+  - .ng-valid
+  - .ng-invalid
+  - .ng-pending
+  - .ng-pristine
+  - .ng-dirty
+  - .ng-untouched
+  - .ng-touched
+
+
+```javascript
+// hero-form-reactive.component.ts (validator functions)
+ngOnInit(): void {
+  this.heroForm = new FormGroup({
+    'name': new FormControl(this.hero.name, [
+      Validators.required,
+      Validators.minLength(4),
+      forbiddenNameValidator(/bob/i) // <-- Here's how you pass in the custom validator. https://angular.io/guide/form-validation#custom-validators
+    ]),
+    'alterEgo': new FormControl(this.hero.alterEgo),
+    'power': new FormControl(this.hero.power, Validators.required)
+  });
+
+}
+
+get name() { return this.heroForm.get('name'); }
+
+get power() { return this.heroForm.get('power'); }
+```
+```html
+<!--hero-form-reactive.component.html (name with error msg)-->
+<input id="name" class="form-control"
+      formControlName="name" required >
+
+<div *ngIf="name.invalid && (name.dirty || name.touched)"
+    class="alert alert-danger">
+
+  <div *ngIf="name.errors.required">
+    Name is required.
+  </div>
+  <div *ngIf="name.errors.minlength">
+    Name must be at least 4 characters long.
+  </div>
+  <div *ngIf="name.errors.forbiddenName">
+    Name cannot be Bob.
+  </div>
+</div>
+```
+**forms.css (status classes)**
+```css
+.ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+```
+
 ### Dynamic controls using form arrays
 
 ```javascript
