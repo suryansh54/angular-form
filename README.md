@@ -271,3 +271,99 @@ profileForm = this.fb.group({
   }),
 });
 ```
+
+#### Step 1: Importing a validator function
+```javascript
+// profile-editor.component.ts 
+import { Validators } from '@angular/forms';
+
+profileForm = this.fb.group({
+  firstName: ['', Validators.required],
+  lastName: [''],
+  address: this.fb.group({
+    street: [''],
+    city: [''],
+    state: [''],
+    zip: ['']
+  }),
+});
+```
+
+```html
+<!--profile-editor.component.html-->
+<input type="text" formControlName="firstName" required>
+<p>
+  Form Status: {{ profileForm.status }}
+</p>
+```
+
+### Dynamic controls using form arrays
+
+```javascript
+// profile-editor.component.ts 
+// https://angular.io/guide/reactive-forms#dynamic-controls-using-form-arrays
+// Step 1: Importing the FormArray class
+import { FormArray } from '@angular/forms';
+
+// Step 2: Defining a FormArray control
+profileForm = this.fb.group({
+  firstName: ['', Validators.required],
+  lastName: [''],
+  address: this.fb.group({
+    street: [''],
+    city: [''],
+    state: [''],
+    zip: ['']
+  }),
+  aliases: this.fb.array([
+    this.fb.control('')
+  ])
+});
+
+// Step 3: Accessing the FormArray control
+get aliases() {
+  return this.profileForm.get('aliases') as FormArray;
+}
+
+addAlias() {
+  this.aliases.push(this.fb.control(''));
+}
+```
+
+**Step 4:** Displaying the form array in the template
+```html
+<!--profile-editor.component.html-->
+<div formArrayName="aliases">
+  <h3>Aliases</h3> <button (click)="addAlias()">Add Alias</button>
+
+  <div *ngFor="let address of aliases.controls; let i=index">
+    <!-- The repeated alias template -->
+    <label>
+      Alias:
+      <input type="text" [formControlName]="i">
+    </label>
+  </div>
+</div>
+```
+
+
+### Reactive forms API
+Listed below are the base classes and services used to create and manage form controls.
+
+| Class | Description |
+| --- | --- |
+| AbstractControl | The abstract base class for the concrete form control classes FormControl, FormGroup, and FormArray. It provides their common behaviors and properties. |
+| FormControl	 | Manages the value and validity status of an individual form control. It corresponds to an HTML form control such as input or select |
+| FormGroup	 | Manages the value and validity state of a group of AbstractControl instances. The group's properties include its child controls. The top-level form in your component is FormGroup |
+| FormArray	 | Manages the value and validity state of a numerically indexed array of AbstractControl instances. |
+| FormBuilder | An injectable service that provides factory methods for creating control instances. |
+
+#### Directives
+
+| Directives | Description |
+| --- | --- |
+| FormControlDirective | Syncs a standalone FormControl instance to a form control element. |
+| FormControlName	 | Syncs FormControl in an existing FormGroup instance to a form control element by name. |
+| FormGroupDirective	 | Syncs an existing FormGroup instance to a DOM element. |
+| FormGroupName	 | Syncs a nested FormGroup instance to a DOM element. |
+| FormArrayName |  Syncs a nested FormArray instance to a DOM element. |
