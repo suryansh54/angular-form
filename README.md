@@ -272,6 +272,23 @@ profileForm = this.fb.group({
 });
 ```
 
+## Form Validation
+**HTML 5 Validation Attribute**
+- required
+- maxlength
+- pattern
+- min
+- max
+
+**Angular Validation Properties**
+- valid
+- invalid
+- pending
+- pristine
+- dirty
+- untouched
+- touched
+  
 #### Step 1: Importing a validator function
 ```javascript
 // profile-editor.component.ts 
